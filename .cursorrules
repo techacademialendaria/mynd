@@ -28,6 +28,25 @@ Para documentação detalhada, consulte /src/aprendizados/README.md
 - Callbacks nomeados como `onAction` para consistência
 - Manter estado local com useState para componentes isolados
 
+## Responsividade
+
+### Breakpoints
+- Mobile: < 640px
+- Tablet: 640px - 1023px
+- Desktop: ≥ 1024px
+
+### Layout Responsivo
+- Grid de 12 colunas para adaptação a diferentes tamanhos
+- Em mobile: empilhar colunas com `col-span-12`
+- Em desktop: dividir em seções com `lg:col-span-X`
+- Usar classes utilitárias como `flex-col sm:flex-row` para adaptação
+
+### Scroll e Overflow
+- Conteúdo longo deve ter container com `overflow-y: auto`
+- Garantir visibilidade da barra de rolagem (4px de largura)
+- Adaptar altura máxima com `max-height: calc(100vh - [offset])`
+- Usar `-webkit-overflow-scrolling: touch` para dispositivos touchscreen
+
 ## Método 4C (WhatsApp)
 1. Consumir: Receber mensagens do WhatsApp
 2. Capturar: Armazenar no banco de dados
@@ -45,3 +64,6 @@ Para documentação detalhada, consulte /src/aprendizados/README.md
 3. Feedback visual para todas as ações do usuário
 4. Respeitar contraste para acessibilidade
 5. Limitar elementos visuais ao necessário
+6. Garantir funcionamento em TODOS os tamanhos de tela
+7. Áreas de conteúdo longo DEVEM ter rolagem própria
+8. Elementos interativos devem ter tamanho adequado para toque (≥ 44px)

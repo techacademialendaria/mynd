@@ -24,6 +24,12 @@ Este diretório contém a documentação detalhada dos aprendizados e padrões u
    - Implementação de prompts
    - Boas práticas para uso de modelos Claude
 
+5. [Responsividade e Acessibilidade](./responsividade.md)
+   - Layouts responsivos e breakpoints
+   - Otimização para diferentes dispositivos
+   - Padrões de scroll e overflow
+   - Práticas de acessibilidade WCAG
+
 ## Princípios Fundamentais
 
 ### Método 4C
@@ -54,7 +60,7 @@ O sistema é composto por três serviços principais com responsabilidades bem d
 
 - **Novos desenvolvedores**: Comece pelo README principal e depois explore cada documento específico
 - **Designers**: Consulte o documento de design-system.md para padrões visuais
-- **Desenvolvedores front-end**: Veja componentes.md para padrões de implementação
+- **Desenvolvedores front-end**: Veja componentes.md e responsividade.md para padrões de implementação
 - **Desenvolvedores back-end**: Consulte whatsapp-integration.md e ai-integration.md
 
 ## Contribuindo
