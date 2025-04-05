@@ -1,36 +1,148 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WhatsApp AI Agent - Método 4C
 
-## Getting Started
+Um agente de automação para WhatsApp que aplica o Método 4C (Consumir, Capturar, Conectar, Criar) para gerenciar conversas de maneira inteligente.
 
-First, run the development server:
+## Visão Geral
+
+Este projeto implementa um agente de WhatsApp que:
+
+1. **Consumir**: Recebe e processa mensagens do WhatsApp
+2. **Capturar**: Armazena mensagens e metadados no MongoDB
+3. **Conectar**: Analisa o conteúdo usando IA via Anthropic Claude
+4. **Criar**: Gera respostas automáticas inteligentes
+
+## Funcionalidades
+
+- Conexão com WhatsApp via QR Code
+- Armazenamento de mensagens no MongoDB
+- Análise de sentimento, intenção e palavras-chave das mensagens
+- Geração de respostas utilizando IA
+- Interface web para controle e gerenciamento
+
+## Tecnologias Utilizadas
+
+- Next.js (React + TypeScript)
+- MongoDB (via Mongoose)
+- Baileys (API não oficial de WhatsApp)
+- Claude/Anthropic AI
+- TailwindCSS
+- Docker (para MongoDB)
+
+## Requisitos
+
+- Node.js 18+
+- Docker e Docker Compose (para MongoDB)
+- Chave de API da Anthropic
+- Conexão com WhatsApp via celular (para escanear o QR Code)
+
+## Configuração
+
+1. Clone o repositório
+2. Instale as dependências:
+   ```
+   pnpm install
+   ```
+3. Configure as variáveis de ambiente (crie um arquivo .env.local):
+   ```
+   MONGODB_URI=mongodb://localhost:27017/whatsapp-agent
+   ANTHROPIC_API_KEY=sk_ant_xxxxx
+   ```
+
+## Inicialização Rápida (Linux/Mac)
+
+Para simplificar o processo de inicialização, você pode usar o script `start-dev.sh`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Tornar o script executável
+chmod +x start-dev.sh
+
+# Executar o script
+./start-dev.sh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Este script irá:
+1. Verificar se o Docker e Docker Compose estão instalados
+2. Criar um arquivo `.env.local` se não existir
+3. Iniciar o MongoDB via Docker
+4. Iniciar o servidor Next.js
+5. Fornecer instruções para conectar o WhatsApp
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Utilização com Docker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Este projeto inclui uma configuração Docker para facilitar a execução do MongoDB.
 
-## Learn More
+### Iniciar o MongoDB com Docker
+```bash
+pnpm docker:up
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Iniciar a aplicação com o MongoDB
+```bash
+pnpm dev:with-db
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Parar o MongoDB
+```bash
+pnpm docker:down
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Para mais detalhes, consulte o arquivo [docker-instructions.md](docker-instructions.md).
 
-## Deploy on Vercel
+## Uso
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Inicie o MongoDB e a aplicação com `pnpm dev:with-db` ou use o script `./start-dev.sh`
+2. Abra http://localhost:3000 no navegador
+3. Na interface web, clique em "Conectar WhatsApp"
+4. Escaneie o QR code que aparecerá no console/terminal
+5. Após a conexão, você verá as mensagens recebidas na interface
+6. Você pode:
+   - Analisar mensagens com IA
+   - Gerar e enviar respostas automáticas
+   - Ver análises detalhadas de cada mensagem
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Estrutura do Projeto
+
+```
+src/
+├── app/               # Rotas do Next.js
+│   ├── api/           # API endpoints
+│   │   ├── messages/  # API de mensagens
+│   │   └── whatsapp/  # API de WhatsApp
+│   └── page.tsx       # Interface principal
+├── lib/               # Bibliotecas e utilitários
+│   ├── db/            # Conexão e modelos do MongoDB
+│   │   ├── models/    # Modelos Mongoose
+│   │   └── mongodb.ts # Configuração da conexão
+│   └── services/      # Serviços do aplicativo
+│       ├── ai.ts      # Serviço de IA (Anthropic)
+│       └── whatsapp.ts # Serviço de WhatsApp
+└── ...
+```
+
+## Plano de Desenvolvimento
+
+Este projeto segue o plano 80/20, focando nas funcionalidades principais para entrega do MVP:
+
+1. ✅ Conexão básica com WhatsApp
+2. ✅ Armazenamento de mensagens no MongoDB
+3. ✅ Análise de mensagens com IA
+4. ✅ Geração de respostas automáticas
+5. ✅ Interface simples para gerenciamento
+
+## Futuras Melhorias
+
+- Implementar autenticação de usuários
+- Adicionar suporte para múltiplas contas de WhatsApp
+- Criar modelos de resposta personalizáveis
+- Implementar fluxos automatizados de conversação
+- Adicionar painéis de análise e métricas
+- Melhorar a interface com design responsivo e temas
+
+## Recursos Adicionais
+
+- [Guia Técnico de Referência](docs/whatsapp-ai-agent-reference.md) - Documento detalhado com soluções e exemplos de código
+- [Instruções para Docker](docker-instructions.md) - Como configurar e usar Docker com o projeto
+
+## Licença
+
+Este projeto está licenciado sob a [Licença MIT](LICENSE).
