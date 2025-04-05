@@ -3,6 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// Import components
+import Sidebar from '../components/layout/Sidebar';
+import Header from '../components/layout/Header';
+import StatusCard from '../components/ui/StatusCard';
+import SendMessageForm from '../components/ui/SendMessageForm';
+import MessageCard from '../components/ui/MessageCard';
+import Pagination from '../components/ui/Pagination';
+
 export default function Home() {
   const router = useRouter();
   const [isConnected, setIsConnected] = useState(false);
@@ -11,10 +19,6 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [mongoConnected, setMongoConnected] = useState(false);
-  
-  // Estado para envio de mensagem
-  const [recipient, setRecipient] = useState('');
-  const [messageText, setMessageText] = useState('');
   
   // Buscar status da conexão
   const fetchStatus = async () => {
@@ -76,9 +80,7 @@ export default function Home() {
   };
 
   // Enviar mensagem
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const sendMessage = async (recipient: string, messageText: string) => {
     if (!recipient || !messageText) {
       alert('Preencha todos os campos');
       return;
@@ -102,7 +104,6 @@ export default function Home() {
       alert(data.message);
       
       if (data.success) {
-        setMessageText('');
         // Atualizar lista de mensagens
         fetchMessages();
       }
@@ -209,172 +210,90 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col p-4 md:p-8 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">WhatsApp AI Agent</h1>
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <Sidebar />
       
-      {/* Status e ações */}
-      <div className="bg-white p-4 rounded-lg shadow mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center">
-              <div className={`w-3 h-3 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-              <span>{isConnected ? 'Conectado ao WhatsApp' : 'Desconectado'}</span>
-            </div>
-            <div className="flex items-center">
-              <div className={`w-3 h-3 rounded-full mr-2 ${mongoConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-              <span>{mongoConnected ? 'MongoDB Conectado' : 'MongoDB Desconectado'}</span>
-              {!mongoConnected && (
-                <button 
-                  onClick={() => window.open('/docker-instructions.md', '_blank')} 
-                  className="ml-2 text-xs text-blue-500 underline"
-                >
-                  Ver Instruções
-                </button>
-              )}
-            </div>
-          </div>
+      {/* Main Content */}
+      <main className="flex-1 pl-64">
+        <div className="p-8">
+          {/* Header */}
+          <Header />
           
-          <button 
-            onClick={connectWhatsApp}
-            disabled={isLoading}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-          >
-            {isLoading ? 'Processando...' : 'Conectar WhatsApp'}
-          </button>
-        </div>
-        
-        {!isConnected && (
-          <div className="bg-blue-50 p-3 rounded text-sm mb-4 border border-blue-200">
-            <p className="font-medium mb-1">Como conectar:</p>
-            <ol className="list-decimal pl-5">
-              <li>Clique no botão "Conectar WhatsApp" acima</li>
-              <li>Um QR code será exibido no terminal/console do servidor</li>
-              <li>Abra o WhatsApp no seu celular</li>
-              <li>Toque em ⋮ (menu) ou Configurações &gt; Aparelhos conectados</li>
-              <li>Selecione "Conectar um aparelho" e escaneie o QR code</li>
-            </ol>
-            <p className="mt-2 text-blue-600">Nota: Você precisa ter acesso ao console/terminal do servidor para ver o QR code.</p>
-          </div>
-        )}
-        
-        <form onSubmit={sendMessage} className="grid grid-cols-1 md:grid-cols-4 gap-2">
-          <div className="col-span-1 md:col-span-2">
-            <input
-              type="text"
-              placeholder="Número (ex: 5511999999999)"
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              className="w-full border p-2 rounded"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Inclua o código do país (55 para Brasil) + DDD + número
-            </p>
-          </div>
-          <input
-            type="text"
-            placeholder="Mensagem"
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            className="border p-2 rounded"
-          />
-          <button 
-            type="submit"
-            disabled={isLoading || !isConnected}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-          >
-            Enviar
-          </button>
-        </form>
-      </div>
-      
-      {/* Lista de Mensagens */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Mensagens</h2>
-          <button 
-            onClick={() => fetchMessages(1)} 
-            className="text-sm text-blue-500 hover:underline"
-            disabled={isLoading}
-          >
-            Atualizar
-          </button>
-        </div>
-        
-        {isLoading ? (
-          <div className="text-center py-4">Carregando...</div>
-        ) : messages.length === 0 ? (
-          <div className="text-center py-4">Nenhuma mensagem encontrada</div>
-        ) : (
-          <div className="space-y-4">
-            {messages.map((msg) => (
-              <div key={msg._id} className="border p-3 rounded-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-medium">De: {msg.sender}</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(msg.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex space-x-2">
-                    {!msg.processed && (
-                      <button
-                        onClick={() => analyzeMessage(msg._id)}
-                        className="px-2 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
-                      >
-                        Analisar
-                      </button>
-                    )}
-                    <button
-                      onClick={() => respondToMessage(msg._id)}
-                      className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-                    >
-                      Responder
-                    </button>
-                  </div>
+          {/* Content Grid */}
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Column */}
+            <div className="col-span-4 space-y-6">
+              {/* Status Card */}
+              <StatusCard 
+                isWhatsAppConnected={isConnected}
+                isMongoConnected={mongoConnected}
+                onConnectWhatsApp={connectWhatsApp}
+                isLoading={isLoading}
+              />
+              
+              {/* Send Message Form */}
+              <SendMessageForm 
+                onSendMessage={sendMessage}
+                isConnected={isConnected}
+                isLoading={isLoading}
+              />
+            </div>
+            
+            {/* Right Column - Messages */}
+            <div className="col-span-8">
+              <div className="card p-4">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-semibold">Mensagens Recentes</h2>
+                  <button 
+                    onClick={() => fetchMessages(1)} 
+                    className="text-sm text-[var(--color-accent)] hover:underline"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Atualizando...' : 'Atualizar'}
+                  </button>
                 </div>
                 
-                <p className="mb-3">{msg.content}</p>
-                
-                {msg.processed && msg.aiAnalysis && (
-                  <div className="bg-gray-50 p-2 rounded text-sm">
-                    <p><span className="font-medium">Intenção:</span> {msg.aiAnalysis.intent}</p>
-                    <p><span className="font-medium">Sentimento:</span> {msg.aiAnalysis.sentiment}</p>
-                    {msg.aiAnalysis.keywords && (
-                      <p><span className="font-medium">Palavras-chave:</span> {msg.aiAnalysis.keywords.join(', ')}</p>
-                    )}
-                    {msg.aiAnalysis.summary && (
-                      <p><span className="font-medium">Resumo:</span> {msg.aiAnalysis.summary}</p>
-                    )}
+                {isLoading && messages.length === 0 ? (
+                  <div className="flex justify-center items-center py-12">
+                    <svg className="animate-spin h-8 w-8 text-[var(--color-accent)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="text-center py-12 border border-dashed border-[var(--color-surface-4)] rounded-lg">
+                    <div className="text-4xl mb-2">📭</div>
+                    <p className="text-[var(--color-surface-7)]">Nenhuma mensagem encontrada</p>
+                    <p className="text-xs text-[var(--color-surface-6)] mt-1">
+                      As mensagens recebidas aparecerão aqui
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((message) => (
+                      <MessageCard
+                        key={message._id}
+                        message={message}
+                        onAnalyze={analyzeMessage}
+                        onRespond={respondToMessage}
+                        isLoading={isLoading}
+                      />
+                    ))}
+                    
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={fetchMessages}
+                      isLoading={isLoading}
+                    />
                   </div>
                 )}
               </div>
-            ))}
+            </div>
           </div>
-        )}
-        
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6 space-x-2">
-            <button
-              onClick={() => fetchMessages(currentPage - 1)}
-              disabled={currentPage === 1 || isLoading}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <span className="px-3 py-1">
-              Página {currentPage} de {totalPages}
-            </span>
-            <button
-              onClick={() => fetchMessages(currentPage + 1)}
-              disabled={currentPage === totalPages || isLoading}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Próxima
-            </button>
-          </div>
-        )}
+        </div>
+      </main>
     </div>
-    </main>
   );
 }

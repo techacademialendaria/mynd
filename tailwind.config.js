@@ -1,0 +1,83 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Cores de superfície
+        'surface': {
+          'black': '#000000',
+          '10': '#101010',
+          '20': '#202020',
+          '30': '#303030',
+          '40': '#404040',
+          '50': '#505050',
+          '75': '#757575',
+          '95': '#959595',
+          'bf': '#BFBFBF',
+          'd8': '#D8D8D8',
+          'f2': '#F2F2F2',
+          'white': '#FFFFFF',
+        },
+        // Cor de destaque (laranja)
+        'accent': '#FD6649',
+        'accent-hover': '#e05a40',
+      },
+      fontFamily: {
+        sans: [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica Neue',
+          'Arial',
+          'sans-serif',
+        ],
+      },
+      borderRadius: {
+        '4': '4px',
+        '8': '8px',
+        '12': '12px',
+        '16': '16px',
+        '20': '20px',
+        '24': '24px',
+      },
+      spacing: {
+        '4': '4px',
+        '8': '8px',
+        '12': '12px',
+        '16': '16px',
+        '20': '20px',
+        '24': '24px',
+        '28': '28px',
+        '32': '32px',
+        '36': '36px',
+        '40': '40px',
+        '44': '44px',
+        '48': '48px',
+        '52': '52px',
+        '56': '56px',
+        '60': '60px',
+        '64': '64px',
+      },
+      fontSize: {
+        '12': ['12px', '16px'],
+        '14': ['14px', '20px'],
+        '16': ['16px', '24px'],
+        '18': ['18px', '24px'],
+        '20': ['20px', '28px'],
+        '24': ['24px', '32px'],
+        '28': ['28px', '36px'],
+        '32': ['32px', '40px'],
+      },
+    },
+  },
+  plugins: [],
+} 

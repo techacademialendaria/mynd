@@ -147,3 +147,73 @@ interface IMessage extends Document {
 - Implementar retentativas com backoff exponencial para reconexão
 - Adicionar suporte para múltiplas contas de WhatsApp
 - Criar sistema de templates de respostas personalizáveis 
+
+
+
+
+# UI / UX
+
+## Mandamentos
+
+1. **JAMAIS colocarás uma feature que não funciona no ar.** Uma feature que não funciona é muito pior do que não ter a feature. Se não funciona, remova-a. Isso vale desde pequenos componentes até grandes funcionalidades.
+
+2. **JAMAIS farás o deploy de uma interface sem passar pelo UX Check.** Se não cuidarmos da experiência do usuário, todo o esforço investido pode se tornar um feedback negativo. Sempre submeta todas as interfaces a uma verificação de UX.
+
+3. **Cuidarás com carinho da consistência e coerência.** Uma plataforma inconsistente e incoerente transmite a sensação de estar quebrada. Verifique se os componentes já existem e reutilize-os sempre que possível. Se o componente ainda não existir, solicite a criação; se o prazo estiver apertado e for preciso criar algo provisoriamente, siga as diretrizes de hierarquia, escala de 4px e biblioteca de cores de superfície.
+
+4. **Amarás o conteúdo como amas a ti mesmo.** Tão ou mais importante do que o visual é o conteúdo inserido. Utilize textos de linguagem natural, sem códigos ou números de série, e evite rótulos ambíguos ou incompreensíveis.
+
+5. **Não poluirás a tela com elementos inúteis.** Excesso de ícones, textos e cores gera confusão e prejudica a tomada de decisão. Utilize a premissa “menos, porém melhor” e remova sem piedade tudo o que não tiver um motivo óbvio para estar ali.
+
+6. **Zelarás pela legibilidade e contraste.** Texto ilegível ou com pouco contraste faz o usuário desistir e transmite uma percepção de interface quebrada. Utilize boas práticas de semântica, contraste de cores e dimensionamento de fontes.
+
+7. **Manterás a hierarquia visual clara.** O usuário deve percorrer a tela de forma natural, identificando sem esforço o que é mais importante. Use títulos e subtítulos para separar conteúdos, direcione o olhar ao elemento principal e respeite a escala de 4px.
+
+8. **Fornecerás feedback visual para ações do usuário.** Qualquer interação deve gerar uma resposta visual imediata, evitando dúvidas ou cliques repetidos. Exiba mensagens claras para operações em andamento (como loaders ou progress bars) e informe sobre sucessos, erros e status dos processos.
+
+## Diretrizes Principais
+
+9. **Escala de 4px**: Usamos a escala de 4px para todas as hierarquias: espaçamentos, tamanhos de fonte e de elementos. (4px, 8px, 12px, 16px, 20px, 24px, etc.)
+
+10. **Tokens de cores de superfície**: Respeite sempre as cores de superfície definidas. Não utilizamos gradientes, apenas tons sobre tons:
+    
+    - #000000
+    - #101010
+    - #202020
+    - #303030
+    - #404040
+    - #505050
+    - #757575
+    - #959595
+    - BFBFBF
+    - D8D8D8
+    - F2F2F2
+    - FFFFFF
+
+11. **Cores de destaque**: Para botões e elementos de destaque, use **apenas** o laranja `#FD6649`. Nunca utilize outras cores (azul, verde, roxo, etc.) para destaques. Em botões laranja, o texto é sempre branco.
+
+12. **Legibilidade e contraste**: Respeite as diretrizes de acessibilidade (WCAG AA) para garantir contrastes mínimos e boa leitura em todas as telas. Se necessário, utilize o Adobe Color para garantir o contraste https://color.adobe.com/pt/create/color-contrast-analyzer
+
+13. **Aplicação de logotipo**:
+    - Em fundos claros: símbolo laranja e texto preto.
+    - Em fundos escuros: símbolo laranja e texto branco.
+
+14. Componentização e Reutilização: Padronize e reuse componentes para manter consistência visual e comportamental, reduzindo retrabalhos e inconsistências.
+
+15. Validação e Feedback de Erros: Valide formulários e entradas do usuário, fornecendo feedback claro e imediato quando houver problemas. Mensagens de erro objetivas melhoram a experiência, todas devem estar nos 3 idiomas da aplicação em /apps/dashboard/modules/i18n/locales/[language]/common.json
+
+
+## Diretrizes Adicionais
+
+1. **Responsividade e Acessibilidade**: Certifique-se de que o layout se adapte bem a diferentes tamanhos de tela (desktop, mobile, tablet) e ofereça suporte adequado a leitores de tela e navegação por teclado.
+
+2. **Performance**: Otimize recursos (imagens, scripts, fontes) para garantir carregamentos rápidos. Interfaces lentas geram frustração e podem afetar a retenção de usuários.
+
+3. **Documentação e Versionamento**: Mantenha sempre a documentação atualizada. Se um componente for alterado, registre as mudanças e explique o motivo das decisões.
+
+4. **Microinterações**: Pequenas animações ou transições, quando bem aplicadas, tornam a experiência mais intuitiva e fornecem pistas sutis sobre o uso do sistema.
+
+5. **Teste e Itere Constantemente**: Realize testes com usuários e colete feedback para melhorias contínuas. Interface em constante evolução tende a atender melhor às necessidades do público.
+
+6. **Segurança e Privacidade**: Proteja os dados do usuário e use práticas seguras ao armazenar ou transmitir informações sensíveis.
+

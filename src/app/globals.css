@@ -1,8 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surface color tokens */
+  --color-surface-0: #000000;
+  --color-surface-1: #101010;
+  --color-surface-2: #202020;
+  --color-surface-3: #303030;
+  --color-surface-4: #404040;
+  --color-surface-5: #505050;
+  --color-surface-6: #757575;
+  --color-surface-7: #959595;
+  --color-surface-8: #BFBFBF;
+  --color-surface-9: #D8D8D8;
+  --color-surface-10: #F2F2F2;
+  --color-surface-11: #FFFFFF;
+  
+  /* Accent color */
+  --color-accent: #FD6649;
+  
+  /* Base theme colors */
+  --background: var(--color-surface-1);
+  --foreground: var(--color-surface-11);
+  --card-bg: var(--color-surface-2);
+  --sidebar-bg: var(--color-surface-0);
+  
+  /* Spacing (multiple of 4px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
 }
 
 @theme inline {
@@ -23,4 +54,44 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Card Styles */
+.card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+}
+
+/* Status Indicators */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-dot.connected {
+  background-color: var(--color-accent);
+}
+
+.status-dot.disconnected {
+  background-color: var(--color-surface-6);
 }
