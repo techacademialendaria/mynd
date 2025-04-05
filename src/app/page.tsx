@@ -20,6 +20,21 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [mongoConnected, setMongoConnected] = useState(false);
   
+  // Estado para o menu mobile
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Toggle sidebar
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+    
+    // Adicionar/remover classe no body para prevenir scroll quando o menu está aberto
+    if (!sidebarOpen) {
+      document.body.classList.add('sidebar-open');
+    } else {
+      document.body.classList.remove('sidebar-open');
+    }
+  };
+  
   // Buscar status da conexão
   const fetchStatus = async () => {
     try {
@@ -204,26 +219,37 @@ export default function Home() {
       checkMongoConnection();
     }, 10000); // 10 segundos
     
+    // Adicionar listener para fechar sidebar em resize
+    const handleResize = () => {
+      if (window.innerWidth > 1023 && sidebarOpen) {
+        setSidebarOpen(false);
+        document.body.classList.remove('sidebar-open');
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
     return () => {
       clearInterval(statusInterval);
+      window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [sidebarOpen]);
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Main Content */}
-      <main className="flex-1 pl-64">
-        <div className="p-8">
+      <main className="flex-1 main-with-sidebar lg:pl-64 transition-all duration-300 main-content">
+        <div className="p-4 sm:p-6 md:p-8">
           {/* Header */}
-          <Header />
+          <Header onToggleSidebar={toggleSidebar} />
           
           {/* Content Grid */}
-          <div className="grid grid-cols-12 gap-8">
+          <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 responsive-grid">
             {/* Left Column */}
-            <div className="col-span-4 space-y-6">
+            <div className="col-span-12 lg:col-span-4 space-y-4 md:space-y-6">
               {/* Status Card */}
               <StatusCard 
                 isWhatsAppConnected={isConnected}
@@ -241,10 +267,10 @@ export default function Home() {
             </div>
             
             {/* Right Column - Messages */}
-            <div className="col-span-8">
+            <div className="col-span-12 lg:col-span-8">
               <div className="card p-4">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Mensagens Recentes</h2>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                  <h2 className="text-lg font-semibold mb-2 sm:mb-0">Mensagens Recentes</h2>
                   <button 
                     onClick={() => fetchMessages(1)} 
                     className="text-sm text-[var(--color-accent)] hover:underline"
@@ -254,33 +280,39 @@ export default function Home() {
                   </button>
                 </div>
                 
-                {isLoading && messages.length === 0 ? (
-                  <div className="flex justify-center items-center py-12">
-                    <svg className="animate-spin h-8 w-8 text-[var(--color-accent)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </div>
-                ) : messages.length === 0 ? (
-                  <div className="text-center py-12 border border-dashed border-[var(--color-surface-4)] rounded-lg">
-                    <div className="text-4xl mb-2">📭</div>
-                    <p className="text-[var(--color-surface-7)]">Nenhuma mensagem encontrada</p>
-                    <p className="text-xs text-[var(--color-surface-6)] mt-1">
-                      As mensagens recebidas aparecerão aqui
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {messages.map((message) => (
-                      <MessageCard
-                        key={message._id}
-                        message={message}
-                        onAnalyze={analyzeMessage}
-                        onRespond={respondToMessage}
-                        isLoading={isLoading}
-                      />
-                    ))}
-                    
+                <div className="messages-container">
+                  {isLoading && messages.length === 0 ? (
+                    <div className="flex justify-center items-center py-12">
+                      <svg className="animate-spin h-8 w-8 text-[var(--color-accent)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                  ) : messages.length === 0 ? (
+                    <div className="text-center py-8 md:py-12 border border-dashed border-[var(--color-surface-4)] rounded-lg">
+                      <div className="text-4xl mb-2">📭</div>
+                      <p className="text-[var(--color-surface-7)]">Nenhuma mensagem encontrada</p>
+                      <p className="text-xs text-[var(--color-surface-6)] mt-1">
+                        As mensagens recebidas aparecerão aqui
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {messages.map((message) => (
+                        <MessageCard
+                          key={message._id}
+                          message={message}
+                          onAnalyze={analyzeMessage}
+                          onRespond={respondToMessage}
+                          isLoading={isLoading}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {totalPages > 1 && (
+                  <div className="mt-4 pt-4 border-t border-[var(--color-surface-3)]">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}

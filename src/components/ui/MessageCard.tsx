@@ -30,7 +30,7 @@ export default function MessageCard({
   
   return (
     <div className="card p-4 mb-4">
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2">
         <div>
           <div className="flex items-center">
             <span className="text-lg mr-2">💬</span>
@@ -41,12 +41,12 @@ export default function MessageCard({
           </div>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           {!processed && (
             <button
               onClick={() => onAnalyze(_id)}
               disabled={isLoading}
-              className="px-3 py-1 bg-[var(--color-surface-4)] text-white text-xs rounded-md hover:bg-[var(--color-surface-5)] disabled:opacity-50"
+              className="px-3 py-1 bg-[var(--color-surface-4)] text-white text-xs rounded-md hover:bg-[var(--color-surface-5)] disabled:opacity-50 flex-1 sm:flex-none"
             >
               Analisar
             </button>
@@ -54,7 +54,7 @@ export default function MessageCard({
           <button
             onClick={() => onRespond(_id)}
             disabled={isLoading}
-            className="btn-primary px-3 py-1 text-xs rounded-md disabled:opacity-50"
+            className="btn-primary px-3 py-1 text-xs rounded-md disabled:opacity-50 flex-1 sm:flex-none"
           >
             Responder
           </button>
@@ -62,12 +62,12 @@ export default function MessageCard({
       </div>
       
       <div className="border-b border-[var(--color-surface-3)] pb-3 mb-3">
-        <p className="text-sm">{content}</p>
+        <p className="text-sm break-words">{content}</p>
       </div>
       
       {processed && aiAnalysis && (
         <div className="bg-[var(--color-surface-3)] p-3 rounded-lg text-xs">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {aiAnalysis.intent && (
               <div>
                 <span className="text-[var(--color-surface-8)]">Intenção:</span>

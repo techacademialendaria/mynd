@@ -1,17 +1,31 @@
 import React from 'react';
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+export default function Header({ onToggleSidebar }: HeaderProps) {
   return (
     <header className="flex items-center justify-between h-16 mb-8">
-      <div>
-        <h1 className="text-2xl font-bold">Agentes WhatsApp</h1>
-        <p className="text-[var(--color-surface-7)] text-sm">
-          Gerencie seus agentes de IA para WhatsApp
-        </p>
+      <div className="flex items-center">
+        <button 
+          className="mobile-nav-button mr-4" 
+          onClick={onToggleSidebar}
+          aria-label="Toggle navigation"
+        >
+          ☰
+        </button>
+        
+        <div>
+          <h1 className="text-2xl font-bold">Agentes WhatsApp</h1>
+          <p className="text-[var(--color-surface-7)] text-sm">
+            Gerencie seus agentes de IA para WhatsApp
+          </p>
+        </div>
       </div>
       
       <div className="flex items-center gap-4">
-        <div className="relative">
+        <div className="relative hidden md:block">
           <input
             type="text"
             placeholder="Buscar agentes..."
@@ -22,9 +36,10 @@ export default function Header() {
           </span>
         </div>
         
-        <button className="bg-[var(--color-accent)] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+        <button className="bg-[var(--color-accent)] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center whitespace-nowrap">
           <span className="mr-2">+</span>
-          Novo Agente
+          <span className="hidden sm:inline">Novo Agente</span>
+          <span className="sm:hidden">Novo</span>
         </button>
       </div>
     </header>
