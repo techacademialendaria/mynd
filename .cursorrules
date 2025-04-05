@@ -1,219 +1,47 @@
-# Regras e Aprendizados para WhatsApp AI Agent com Método 4C
+# WhatsApp AI Agent - Regras de Desenvolvimento
+Para documentação detalhada, consulte /src/aprendizados/README.md
+## Design System
 
-## Arquitetura e Estrutura
-- Siga o Método 4C: Consumir (receber mensagens) → Capturar (armazenar) → Conectar (analisar) → Criar (responder)
-- Use o princípio 80/20: Foque nas funcionalidades principais que entregam mais valor
-- Mantenha serviços separados para WhatsApp, banco de dados e IA
-- Use TypeScript com interfaces bem definidas para todos os modelos de dados
+### Cores
+- Superfícies: #000000, #101010, #202020, #303030, #404040, #505050, #757575, #959595, #BFBFBF, #D8D8D8, #F2F2F2, #FFFFFF
+- Destaque: #FD6649 (usar APENAS para ações primárias)
+- Proibido: Não usar outras cores para destaque além do laranja definido
 
-## Problemas Comuns e Soluções
+### Espaçamento
+- Seguir escala de 4px: 4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px
 
-### Dependências do WhatsApp (Baileys)
-```
-# Dependências necessárias para Baileys
-pnpm add jimp@0.16.1 sharp@0.32.6 link-preview-js qrcode-terminal @hapi/boom
-```
+### Componentes
+- Cards: Fundo #202020, bordas arredondadas 8px
+- Botões primários: #FD6649 com texto branco
+- Botões secundários: #404040 com texto branco
+- Estados vazios: Incluir ícone + mensagem principal + orientação secundária
 
-### Configuração Next.js com Bibliotecas Node.js
-```javascript
-// next.config.js
-const nextConfig = {
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        fs: false, path: false, os: false, crypto: false,
-        stream: false, http: false, https: false, zlib: false,
-        net: false, tls: false, child_process: false,
-      };
-    }
-    return config;
-  },
-  serverExternalPackages: [
-    '@whiskeysockets/baileys', 'sharp', 'jimp',
-    'qrcode-terminal', 'link-preview-js',
-  ],
-  experimental: {
-    serverActions: true,
-  },
-};
-```
+## Arquitetura 
 
-### Formatação de Números WhatsApp
-```javascript
-// Formatação correta para números de WhatsApp
-let formattedNumber = phoneNumber.replace(/\D/g, '');
-if (!formattedNumber.includes('@')) {
-  formattedNumber = `${formattedNumber}@s.whatsapp.net`;
-}
-```
+### Estrutura de Componentes
+- /components/layout: Sidebar, Header (estrutura da página)
+- /components/ui: Componentes reutilizáveis (StatusCard, MessageCard, etc.)
+- Componentes devem ser independentes e receber props explícitas
 
-### Separação Código Cliente/Servidor
-```javascript
-// Verificação de ambiente servidor/cliente
-const isServer = typeof window === 'undefined';
-if (!isServer) {
-  console.error('Este código só deve ser executado no servidor');
-  return false;
-}
-```
+### Estado e Comunicação
+- Props claras e tipadas com TypeScript
+- Callbacks nomeados como `onAction` para consistência
+- Manter estado local com useState para componentes isolados
 
-### APIs Next.js
-```javascript
-// Configuração para APIs no Next.js
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-```
+## Método 4C (WhatsApp)
+1. Consumir: Receber mensagens do WhatsApp
+2. Capturar: Armazenar no banco de dados
+3. Conectar: Analisar com IA
+4. Criar: Gerar respostas personalizadas
 
-## Docker e MongoDB
+## Integração IA
+- Usar claude-3.5-haiku para análise (mais rápido, econômico)
+- Usar claude-3.7-sonnet para respostas complexas
+- Estruturar prompts com contexto claro e formato de saída definido
 
-### Comando Docker para MongoDB
-```bash
-# Iniciar MongoDB com Docker
-docker run -d --name whatsapp-mongodb -p 27017:27017 mongo:latest
-```
-
-### Verificação de Conexão MongoDB
-```javascript
-// Verificar conexão com MongoDB
-const mongoose = await connectToDatabase();
-const isConnected = mongoose.connection.readyState === 1;
-```
-
-## Padrões de Código
-
-### Tratamento Progressivo de Erros
-```javascript
-async function sendTextMessage(to, text) {
-  if (!isServer) return false;
-  if (!this.client || !this.isConnected) return false;
-  
-  try {
-    // formatar número e enviar
-    return true;
-  } catch (error) {
-    console.error('Erro:', error);
-    return false;
-  }
-}
-```
-
-### Persistência de Autenticação WhatsApp
-```javascript
-// Diretório para armazenar credenciais WhatsApp
-const AUTH_DIR = isServer ? path.join(process.cwd(), 'auth_data') : '';
-if (isServer && !fs.existsSync(AUTH_DIR)) {
-  fs.mkdirSync(AUTH_DIR, { recursive: true });
-}
-```
-
-### Modelo de Mensagem
-```javascript
-// Modelo de mensagem para MongoDB
-interface IMessage extends Document {
-  sender: string;
-  content: string;
-  timestamp: Date;
-  chat: string;
-  mediaUrl?: string;
-  processed: boolean;
-  aiAnalysis?: {
-    intent?: string;
-    sentiment?: string;
-    keywords?: string[];
-    summary?: string;
-  };
-  metadata?: Record<string, any>;
-}
-```
-
-## Requisitos Específicos
-
-### Ambiente Servidor
-- Arquivos de autenticação em `auth_data/`
-- MongoDB deve estar rodando na porta 27017
-- Variável de ambiente ANTHROPIC_API_KEY definida em .env.local
-
-### Formato de Telefone
-- Números devem estar no formato internacional com código do país
-- Exemplo: 5511999999999 (55=Brasil, 11=DDD, 999999999=número)
-
-### QR Code
-- O QR code para conectar o WhatsApp aparece no terminal
-- O usuário deve escanear com WhatsApp pelo celular em Dispositivos Conectados
-
-## Extensões e Melhorias Futuras
-- Implementar sistema de webhooks para notificações
-- Adicionar filas de mensagens para processamento assíncrono
-- Implementar retentativas com backoff exponencial para reconexão
-- Adicionar suporte para múltiplas contas de WhatsApp
-- Criar sistema de templates de respostas personalizáveis 
-
-
-
-
-# UI / UX
-
-## Mandamentos
-
-1. **JAMAIS colocarás uma feature que não funciona no ar.** Uma feature que não funciona é muito pior do que não ter a feature. Se não funciona, remova-a. Isso vale desde pequenos componentes até grandes funcionalidades.
-
-2. **JAMAIS farás o deploy de uma interface sem passar pelo UX Check.** Se não cuidarmos da experiência do usuário, todo o esforço investido pode se tornar um feedback negativo. Sempre submeta todas as interfaces a uma verificação de UX.
-
-3. **Cuidarás com carinho da consistência e coerência.** Uma plataforma inconsistente e incoerente transmite a sensação de estar quebrada. Verifique se os componentes já existem e reutilize-os sempre que possível. Se o componente ainda não existir, solicite a criação; se o prazo estiver apertado e for preciso criar algo provisoriamente, siga as diretrizes de hierarquia, escala de 4px e biblioteca de cores de superfície.
-
-4. **Amarás o conteúdo como amas a ti mesmo.** Tão ou mais importante do que o visual é o conteúdo inserido. Utilize textos de linguagem natural, sem códigos ou números de série, e evite rótulos ambíguos ou incompreensíveis.
-
-5. **Não poluirás a tela com elementos inúteis.** Excesso de ícones, textos e cores gera confusão e prejudica a tomada de decisão. Utilize a premissa “menos, porém melhor” e remova sem piedade tudo o que não tiver um motivo óbvio para estar ali.
-
-6. **Zelarás pela legibilidade e contraste.** Texto ilegível ou com pouco contraste faz o usuário desistir e transmite uma percepção de interface quebrada. Utilize boas práticas de semântica, contraste de cores e dimensionamento de fontes.
-
-7. **Manterás a hierarquia visual clara.** O usuário deve percorrer a tela de forma natural, identificando sem esforço o que é mais importante. Use títulos e subtítulos para separar conteúdos, direcione o olhar ao elemento principal e respeite a escala de 4px.
-
-8. **Fornecerás feedback visual para ações do usuário.** Qualquer interação deve gerar uma resposta visual imediata, evitando dúvidas ou cliques repetidos. Exiba mensagens claras para operações em andamento (como loaders ou progress bars) e informe sobre sucessos, erros e status dos processos.
-
-## Diretrizes Principais
-
-9. **Escala de 4px**: Usamos a escala de 4px para todas as hierarquias: espaçamentos, tamanhos de fonte e de elementos. (4px, 8px, 12px, 16px, 20px, 24px, etc.)
-
-10. **Tokens de cores de superfície**: Respeite sempre as cores de superfície definidas. Não utilizamos gradientes, apenas tons sobre tons:
-    
-    - #000000
-    - #101010
-    - #202020
-    - #303030
-    - #404040
-    - #505050
-    - #757575
-    - #959595
-    - BFBFBF
-    - D8D8D8
-    - F2F2F2
-    - FFFFFF
-
-11. **Cores de destaque**: Para botões e elementos de destaque, use **apenas** o laranja `#FD6649`. Nunca utilize outras cores (azul, verde, roxo, etc.) para destaques. Em botões laranja, o texto é sempre branco.
-
-12. **Legibilidade e contraste**: Respeite as diretrizes de acessibilidade (WCAG AA) para garantir contrastes mínimos e boa leitura em todas as telas. Se necessário, utilize o Adobe Color para garantir o contraste https://color.adobe.com/pt/create/color-contrast-analyzer
-
-13. **Aplicação de logotipo**:
-    - Em fundos claros: símbolo laranja e texto preto.
-    - Em fundos escuros: símbolo laranja e texto branco.
-
-14. Componentização e Reutilização: Padronize e reuse componentes para manter consistência visual e comportamental, reduzindo retrabalhos e inconsistências.
-
-15. Validação e Feedback de Erros: Valide formulários e entradas do usuário, fornecendo feedback claro e imediato quando houver problemas. Mensagens de erro objetivas melhoram a experiência, todas devem estar nos 3 idiomas da aplicação em /apps/dashboard/modules/i18n/locales/[language]/common.json
-
-
-## Diretrizes Adicionais
-
-1. **Responsividade e Acessibilidade**: Certifique-se de que o layout se adapte bem a diferentes tamanhos de tela (desktop, mobile, tablet) e ofereça suporte adequado a leitores de tela e navegação por teclado.
-
-2. **Performance**: Otimize recursos (imagens, scripts, fontes) para garantir carregamentos rápidos. Interfaces lentas geram frustração e podem afetar a retenção de usuários.
-
-3. **Documentação e Versionamento**: Mantenha sempre a documentação atualizada. Se um componente for alterado, registre as mudanças e explique o motivo das decisões.
-
-4. **Microinterações**: Pequenas animações ou transições, quando bem aplicadas, tornam a experiência mais intuitiva e fornecem pistas sutis sobre o uso do sistema.
-
-5. **Teste e Itere Constantemente**: Realize testes com usuários e colete feedback para melhorias contínuas. Interface em constante evolução tende a atender melhor às necessidades do público.
-
-6. **Segurança e Privacidade**: Proteja os dados do usuário e use práticas seguras ao armazenar ou transmitir informações sensíveis.
-
+## Mandamentos UI/UX
+1. JAMAIS colocar feature que não funciona em produção
+2. Manter hierarquia visual clara (títulos, subtítulos, conteúdo)
+3. Feedback visual para todas as ações do usuário
+4. Respeitar contraste para acessibilidade
+5. Limitar elementos visuais ao necessário
